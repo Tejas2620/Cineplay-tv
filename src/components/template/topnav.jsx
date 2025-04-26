@@ -40,11 +40,11 @@ const Topnav = () => {
     if (result.media_type === "person") {
       return result.profile_path
         ? `https://image.tmdb.org/t/p/w500${result.profile_path}`
-        : "https://via.placeholder.com/100x150?text=No+Image";
+        : "https://www.startpage.com/av/proxy-image?piurl=https%3A%2F%2Fcdn4.iconfinder.com%2Fdata%2Ficons%2Fsolid-part-6%2F128%2Fimage_icon-512.png&sp=1745693948Tb2a8cc02cfd126ff7be597f4c0657d79d5ca410a1c76d0929069d9b6b349aba0";
     } else {
       return result.poster_path
         ? `https://image.tmdb.org/t/p/w500${result.poster_path}`
-        : "https://via.placeholder.com/100x150?text=No+Image";
+        : "https://www.startpage.com/av/proxy-image?piurl=https%3A%2F%2Fcdn4.iconfinder.com%2Fdata%2Ficons%2Fsolid-part-6%2F128%2Fimage_icon-512.png&sp=1745693948Tb2a8cc02cfd126ff7be597f4c0657d79d5ca410a1c76d0929069d9b6b349aba0";
     }
   };
 
