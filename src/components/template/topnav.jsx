@@ -3,129 +3,114 @@ import { Link } from "react-router-dom";
 import { RiSearchLine, RiCloseLine } from "react-icons/ri";
 import axios from "../../utils/axios";
 
-const Topnav = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+function Topnav() {
+  const [query, setQuery] = useState("");
+  const [searches, setSearches] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const getSearches = async () => {
-    if (!searchQuery.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
     try {
-      setIsLoading(true);
-      const response = await axios.get(`/search/multi?query=${searchQuery}`);
-      setSearchResults(response.data.results || []);
+      const { data } = await axios.get(`/search/multi?query=${query}`);
+      setSearches(data.results);
     } catch (error) {
-      console.error("Search error:", error);
-      setSearchResults([]);
-    } finally {
-      setIsLoading(false);
+      console.log(error);
     }
   };
 
-  // Debounce the search to avoid too many API calls
   useEffect(() => {
-    const timer = setTimeout(() => {
-      getSearches();
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  // Function to get the appropriate image URL or placeholder
-  const getImageUrl = (result) => {
-    const defaultImage =
-      "https://www.startpage.com/av/proxy-image?piurl=https%3A%2F%2Fcdn4.iconfinder.com%2Fdata%2Ficons%2Fsolid-part-6%2F128%2Fimage_icon-512.png&sp=1745693948Tb2a8cc02cfd126ff7be597f4c0657d79d5ca410a1c76d0929069d9b6b349aba0";
-
-    if (result.media_type === "person") {
-      return result.profile_path
-        ? `https://image.tmdb.org/t/p/w500${result.profile_path}`
-        : defaultImage;
+    if (query.length > 0) {
+      setIsSearching(true);
+      const debounce = setTimeout(() => {
+        getSearches();
+        setIsSearching(false);
+      }, 1000);
+      return () => clearTimeout(debounce);
     } else {
-      return result.poster_path
-        ? `https://image.tmdb.org/t/p/w500${result.poster_path}`
-        : defaultImage;
+      setSearches([]);
     }
+  }, [query]);
+
+  const getImageUrl = (mediaType, posterPath) => {
+    if (mediaType === "person") {
+      return `https://image.tmdb.org/t/p/w500${posterPath}`;
+    }
+    return `https://image.tmdb.org/t/p/w500${posterPath}`;
   };
 
   return (
-    <div className="w-full h-[10vh] relative flex justify-center items-center bg-zinc-900 px-5">
-      <div className="relative w-[50%] flex items-center">
-        <i className="text-zinc-400 text-3xl mr-4 ri-search-line"></i>
-        <input
-          className="w-full mx-10 p-5 pl-10 text-zinc-100 text-xl outline-none border-none bg-transparent"
-          type="text"
-          placeholder="Search for movies..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+    <div className="w-full h-full flex justify-center items-center px-3 sm:px-4 md:px-6 lg:px-8">
+      <div className="relative w-full max-w-2xl">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search for movies, TV shows, people..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="w-full h-9 sm:h-10 px-3 sm:px-4 pr-10 rounded-lg bg-zinc-800/50 text-white text-sm sm:text-base placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#6556CD] transition-all duration-300"
+          />
+          {query.length > 0 && (
+            <button
+              onClick={() => setQuery("")}
+              className="absolute right-10 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors duration-300"
+            >
+              <RiCloseLine className="text-lg sm:text-xl" />
+            </button>
+          )}
+          <RiSearchLine className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 text-lg sm:text-xl" />
+        </div>
 
-        {searchQuery.length > 0 && (
-          <i
-            onClick={() => setSearchQuery("")}
-            className="text-zinc-400 text-3xl mr-4 ri-close-line cursor-pointer hover:text-zinc-200"
-          ></i>
-        )}
-      </div>
-
-      {/* Search Results Navigation - Only shown when there's a search query */}
-      {searchQuery.length > 0 && (
-        <div className="absolute w-[50%] max-h-[50vh] bg-zinc-800 top-[90%] overflow-y-auto rounded-md shadow-lg z-50 custom-scrollbar">
-          <div className="p-4">
-            <h3 className="text-zinc-100 font-semibold mb-3">Search Results</h3>
-
-            {isLoading ? (
-              <div className="flex justify-center py-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-zinc-100"></div>
+        {query.length > 0 && (
+          <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-900/90 backdrop-blur-xl rounded-lg shadow-xl max-h-[60vh] overflow-y-auto custom-scrollbar">
+            {isSearching ? (
+              <div className="flex justify-center items-center p-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-[#6556CD]"></div>
               </div>
-            ) : searchResults.length > 0 ? (
-              <div className="space-y-2">
-                {searchResults.map((result) => (
-                  <div
-                    key={result.id}
-                    className="block p-2 hover:bg-zinc-700 rounded-md transition-colors cursor-pointer"
+            ) : searches.length > 0 ? (
+              <div className="p-2">
+                {searches.map((item) => (
+                  <Link
+                    key={item.id}
+                    to={`/${item.media_type}/${item.id}`}
+                    className="flex items-center gap-3 p-2 hover:bg-zinc-800/50 rounded-lg transition-colors duration-300"
                   >
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 flex-shrink-0 mr-3 bg-zinc-700 rounded overflow-hidden">
-                        <img
-                          className="w-full h-full object-cover"
-                          src={getImageUrl(result)}
-                          alt={result.title || result.name || "Untitled"}
-                        />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-zinc-100 font-medium truncate">
-                          {result.title || result.name || "Untitled"}
-                        </p>
-                        <p className="text-zinc-400 text-sm truncate">
-                          {result.media_type === "movie"
-                            ? "Movie"
-                            : result.media_type === "tv"
-                            ? "TV Show"
-                            : result.media_type === "person"
-                            ? "Person"
-                            : "Other"}
-                          {result.release_date &&
-                            ` • ${result.release_date.split("-")[0]}`}
-                        </p>
+                    <div className="w-12 h-16 sm:w-14 sm:h-20 flex-shrink-0 rounded overflow-hidden">
+                      <img
+                        src={getImageUrl(
+                          item.media_type,
+                          item.poster_path || item.profile_path
+                        )}
+                        alt={item.title || item.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-white font-medium text-sm sm:text-base truncate">
+                        {item.title || item.name}
+                      </h3>
+                      <div className="flex items-center gap-2 text-zinc-400 text-xs sm:text-sm">
+                        <span className="capitalize">{item.media_type}</span>
+                        <span>•</span>
+                        <span>
+                          {item.media_type === "movie"
+                            ? item.release_date?.split("-")[0]
+                            : item.first_air_date?.split("-")[0]}
+                        </span>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (
-              <div className="text-zinc-400 text-center py-4">
+              <div className="p-4 text-center text-zinc-400">
                 No results found
               </div>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
-};
+}
 
 export default Topnav;

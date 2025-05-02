@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "../utils/axios";
+import Loading from "./Loading";
 import {
   RiArrowLeftLine,
   RiStarFill,
@@ -22,13 +23,11 @@ function MovieDetails() {
   const [cast, setCast] = useState([]);
   const [similar, setSimilar] = useState([]);
   const [trailer, setTrailer] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [showTrailer, setShowTrailer] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
   const fetchDetails = async () => {
     try {
-      setLoading(true);
       const [detailsRes, castRes, similarRes, videosRes] = await Promise.all([
         axios.get(`/${type}/${id}`),
         axios.get(`/${type}/${id}/credits`),
@@ -46,8 +45,6 @@ function MovieDetails() {
       setTrailer(officialTrailer);
     } catch (error) {
       console.error("Error fetching details:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -55,16 +52,12 @@ function MovieDetails() {
     fetchDetails();
   }, [id, type]);
 
-  if (loading) {
-    return (
-      <div className="w-full h-screen flex justify-center items-center bg-[#1F1E24]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
-      </div>
-    );
+  if (!details) {
+    return null;
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#1F1E24] text-white">
+    <div className="w-full min-h-screen bg-[#1F1E24] text-white overflow-x-hidden">
       {/* Back Button */}
       <button
         onClick={() => navigate(-1)}
@@ -74,7 +67,7 @@ function MovieDetails() {
       </button>
 
       {/* Hero Section */}
-      <div className="relative h-[70vh]">
+      <div className="relative h-[70vh] overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
@@ -83,8 +76,8 @@ function MovieDetails() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1F1E24] to-transparent" />
 
-        <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-end pb-8">
-          <div className="flex gap-8">
+        <div className="relative h-full w-full max-w-[95vw] mx-auto px-4 sm:px-6 lg:px-8 flex items-end pb-8">
+          <div className="flex gap-8 w-full">
             <div className="hidden md:block w-64 h-96 rounded-lg overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300">
               <img
                 src={`https://image.tmdb.org/t/p/w500${details.poster_path}`}
@@ -92,11 +85,11 @@ function MovieDetails() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="flex-1">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 truncate">
                 {details.title || details.name}
               </h1>
-              <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center gap-4 mb-4 flex-wrap">
                 <span className="text-yellow-400">
                   <RiStarFill />
                 </span>
@@ -113,7 +106,7 @@ function MovieDetails() {
                 </span>
               </div>
               <p className="text-gray-300 text-lg mb-6">{details.overview}</p>
-              <div className="flex gap-4">
+              <div className="flex gap-4 flex-wrap">
                 {trailer && (
                   <button
                     onClick={() => setShowTrailer(true)}
@@ -138,12 +131,12 @@ function MovieDetails() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full max-w-[95vw] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tabs */}
-        <div className="flex gap-4 mb-8 border-b border-zinc-800">
+        <div className="flex gap-4 mb-8 border-b border-zinc-800 overflow-x-auto custom-scrollbar">
           <button
             onClick={() => setActiveTab("overview")}
-            className={`pb-4 px-4 font-semibold transition-colors duration-300 ${
+            className={`pb-4 px-4 font-semibold transition-colors duration-300 whitespace-nowrap ${
               activeTab === "overview"
                 ? "text-[#6556CD] border-b-2 border-[#6556CD]"
                 : "text-gray-400 hover:text-white"
@@ -153,7 +146,7 @@ function MovieDetails() {
           </button>
           <button
             onClick={() => setActiveTab("cast")}
-            className={`pb-4 px-4 font-semibold transition-colors duration-300 ${
+            className={`pb-4 px-4 font-semibold transition-colors duration-300 whitespace-nowrap ${
               activeTab === "cast"
                 ? "text-[#6556CD] border-b-2 border-[#6556CD]"
                 : "text-gray-400 hover:text-white"
@@ -163,7 +156,7 @@ function MovieDetails() {
           </button>
           <button
             onClick={() => setActiveTab("similar")}
-            className={`pb-4 px-4 font-semibold transition-colors duration-300 ${
+            className={`pb-4 px-4 font-semibold transition-colors duration-300 whitespace-nowrap ${
               activeTab === "similar"
                 ? "text-[#6556CD] border-b-2 border-[#6556CD]"
                 : "text-gray-400 hover:text-white"
@@ -255,8 +248,10 @@ function MovieDetails() {
                     className="w-full aspect-[2/3] object-cover"
                   />
                   <div className="p-3">
-                    <h3 className="font-semibold">{person.name}</h3>
-                    <p className="text-sm text-gray-400">{person.character}</p>
+                    <h3 className="font-semibold truncate">{person.name}</h3>
+                    <p className="text-sm text-gray-400 truncate">
+                      {person.character}
+                    </p>
                   </div>
                 </div>
               ))}
