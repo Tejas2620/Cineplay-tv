@@ -43,3 +43,6 @@ function App() {
 }
 
 export default App;
+
+// │   - Local:    http://localhost:3000    │
+// │   - Network:  http://10.14.0.2:3000

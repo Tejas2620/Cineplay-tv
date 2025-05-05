@@ -9,43 +9,20 @@ function Home() {
   document.title = "Cineplay App | Home";
 
   return (
-    <div className="flex min-h-screen w-full bg-[#1F1E24]">
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="fixed top-2.5 left-2.5 z-50 lg:hidden p-1.5 rounded-lg bg-[#6556CD] hover:bg-[#4f42a3] transition-all duration-300 shadow-md hover:shadow-lg active:scale-95"
-        aria-label="Toggle Menu"
-      >
-        <i
-          className={`ri-${
-            isSidebarOpen ? "close" : "menu"
-          }-line text-lg text-white transition-transform duration-300 ${
-            isSidebarOpen ? "rotate-180" : ""
-          }`}
-        ></i>
-      </button>
-
+    <div className="flex min-h-screen">
       {/* Sidebar */}
-      <div
-        className={`fixed inset-y-0 left-0 w-[280px] lg:w-[20%] z-50 transition-transform duration-300 ease-in-out transform ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        }`}
-      >
-        <Sidenav />
+      <div className="hidden lg:block w-[15%] fixed left-0 top-0 h-screen bg-[#1F1E24] border-r border-zinc-800/50">
+        <div className="h-full flex flex-col">
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
+            <Sidenav />
+          </div>
+        </div>
       </div>
 
-      {/* Overlay for mobile */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
-          onClick={() => setIsSidebarOpen(false)}
-        ></div>
-      )}
-
       {/* Main Content */}
-      <div className="flex-1 min-h-screen w-full lg:w-[80%] lg:ml-[20%]">
+      <div className="flex-1 min-h-screen w-full lg:w-[85%] lg:ml-[15%]">
         {/* Top Navigation */}
-        <div className="fixed top-0 right-0 left-0 lg:left-[20%] h-[52px] border-b border-zinc-800/50 backdrop-blur-md z-30">
+        <div className="fixed top-0 right-0 left-0 lg:left-[15%] h-[52px] border-b border-zinc-800/50 backdrop-blur-md z-30">
           <div className="w-full h-full flex items-center">
             <div className="w-10 lg:hidden"></div>{" "}
             {/* Spacer for mobile menu button */}

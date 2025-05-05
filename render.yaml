@@ -1,10 +1,12 @@
 services:
   - type: web
-    name: cineplay-tv
+    name: cineplay
     env: node
     buildCommand: npm install && npm run build
     startCommand: npm run preview
     envVars:
-      - key: NODE_VERSION
-        value: 18.17.0
+      - key: VITE_TMDB_API_KEY
+        sync: false
+    healthCheckPath: /
+    autoDeploy: true
     staticPublishPath: dist
