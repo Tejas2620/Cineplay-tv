@@ -3,7 +3,7 @@ services:
     name: cineplay
     env: node
     buildCommand: npm install && npm run build
-    startCommand: npm run preview
+    startCommand: node server.js
     envVars:
       - key: VITE_TMDB_API_KEY
         sync: false
