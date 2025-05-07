@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
 import { Link } from "react-router-dom";
-import Loading from "../Loading";
+import Loading from "./Loading";
 
 function Header() {
   const [movies, setMovies] = useState([]);

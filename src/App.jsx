@@ -1,9 +1,9 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./components/Home";
-import MovieDetails from "./components/MovieDetails";
-import AllItems from "./pages/AllItems";
-import Loading from "./components/Loading";
-import Trending from "./components/Trending";
+import Home from "./components/pages/Home";
+import MovieDetails from "./components/pages/MovieDetails";
+import AllItems from "./components/pages/AllItems";
+import Loading from "./components/template/Loading";
+import Trending from "./components/pages/Trending";
 import { useState, useEffect } from "react";
 
 function App() {
