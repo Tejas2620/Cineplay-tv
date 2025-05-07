@@ -10,14 +10,9 @@ const app = express();
 // Serve static files from the dist directory
 app.use(express.static(path.join(__dirname, "dist")));
 
-// Handle client-side routing
-app.get("*", (req, res, next) => {
-  // Check if the request is for a static file
-  if (req.path.includes(".")) {
-    return next();
-  }
-
-  // For all other routes, serve the index.html
+// Handle all routes
+app.get("/*", (req, res) => {
+  // For all routes, serve the index.html
   res.sendFile(path.join(__dirname, "dist", "index.html"), (err) => {
     if (err) {
       console.error("Error sending file:", err);
